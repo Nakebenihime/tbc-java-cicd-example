@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.example</groupId>
     <artifactId>tbc-java-cicd-template</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>tbc-java-cicd-template</name>
     <description>tbc-java-cicd-template</description>
 

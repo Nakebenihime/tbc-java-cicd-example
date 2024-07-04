@@ -1,6 +1,6 @@
 FROM maven:3.9.8-eclipse-temurin-17-alpine AS BUILDER
 LABEL mantainer="mario-dacosta@hotmail.fr" \
-      version="0.0.1-SNAPSHOT" \
+      version="1.1.0-SNAPSHOT" \
       description="Java to-be-continuous CI/CD template" \
       name="tbc-java-cicd-template"
 
