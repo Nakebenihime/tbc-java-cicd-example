@@ -1,0 +1,74 @@
+include:
+  # Docker template
+  - remote: "https://gitlab.com/to-be-continuous/docker/-/raw/5.10.3/templates/gitlab-ci-docker.yml"
+  # Gitleaks template
+  - remote: "https://gitlab.com/to-be-continuous/gitleaks/-/raw/2.5.2/templates/gitlab-ci-gitleaks.yml"
+  # Maven template
+  - remote: "https://gitlab.com/to-be-continuous/maven/-/raw/3.10.1/templates/gitlab-ci-maven.yml"
+  # semantic-release template
+  - remote: "https://gitlab.com/to-be-continuous/semantic-release/-/raw/3.11.0/templates/gitlab-ci-semrel.yml"
+
+variables:
+  MAVEN_DEPENDENCY_CHECK_ARGS: org.owasp:dependency-check-maven:aggregate -DretireJsAnalyzerEnabled=false -DassemblyAnalyzerEnabled=false -Dformats=HTML,JSON,XML -DnvdApiKey=$NVD_API_KEY
+  MAVEN_DEPLOY_ENABLED: "true"
+  MAVEN_DEPLOY_SNAPSHOT_WITH_SLUG_ENABLED: "true"
+
+  DOCKER_TRIVY_DISABLED: "true"
+  SONAR_HOST_URL: "https://sonarcloud.io"
+  SEMREL_CHANGELOG_ENABLED: "true"
+  SEMREL_INFO_ON: "all"
+
+  # secret variables
+  # (define the variables below in your GitLab group/project variables)
+  # SONAR_TOKEN: SonarQube authentication token (see https://docs.sonarqube.org/latest/user-guide/user-token/)
+  # NVD_API_KEY: NVD API Key is required for the Dependency-Check job to function properly (see: https://nvd.nist.gov/developers/request-an-api-key)
+  # GIT_USERNAME: Git username (if you wish to release using Git credentials)
+  # GIT_PASSWORD: Git password (if you wish to release using Git credentials)
+  # MAVEN_SETTINGS_FILE: Maven settings file (settings.xml) used for configuring Maven settings.
+  # GITLAB_TOKEN: GitLab 'project access token' or 'personal access token' with `api`, `read_repository` and `write repository` scopes.
+
+stages:
+  - build
+  - test
+  - package-build
+  - package-test
+  - infra
+  - deploy
+  - acceptance
+  - publish
+  - infra-prod
+  - production
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' || $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        GITLEAKS_ARGS: --log-opts -10
+      when: always
+    - if: $CI_COMMIT_BRANCH != 'main' && $CI_PIPELINE_SOURCE != 'merge_request_event'
+      variables:
+        GITLEAKS_ARGS: --log-opts -1
+      when: always
+
+gitleaks:
+  stage: test
+  needs: []
+  allow_failure: true
+
+mvn-release:
+  rules:
+    - when: never
+
+semantic-release:
+  cache:
+    - !reference [.semrel-base, cache]
+    - key: '$CI_COMMIT_REF_SLUG-maven'
+      paths:
+        - '${MAVEN_PROJECT_DIR}/${MAVEN_CFG_DIR}/repository'
+
+mvn-deploy-snapshot:
+  stage: publish
+  rules:
+    - if: '$CI_MERGE_REQUEST_IID'
+      when: never
+    - when: always

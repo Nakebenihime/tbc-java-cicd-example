@@ -1,0 +1,7 @@
+# ignore all files and directories:
+*
+
+# but include these specific files:
+!pom.xml
+!src
+!src/**/*

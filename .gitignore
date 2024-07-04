@@ -1,0 +1,21 @@
+# ignore all files and directories:
+*
+
+# but include these specific files:
+!.gitignore
+!.dockerignore
+!.gitlab-ci.yml
+!.releaserc.yml
+!CHANGELOG.md
+!README.md
+!pom.xml
+!Dockerfile
+!renovate.json
+!version-management.sh
+
+# additionally, include this directory and all its contents:
+!src
+!src/**/*
+
+# still ignore these files:
+**/*Zone.Identifier

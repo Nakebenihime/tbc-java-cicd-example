@@ -1,0 +1,22 @@
+plugins: [
+  "@semantic-release/commit-analyzer",
+  "@semantic-release/release-notes-generator",
+  "@semantic-release/gitlab",
+  "@semantic-release/changelog",
+  [
+    "@semantic-release/exec",
+    {
+      "prepareCmd": "./version-management.sh \"${lastRelease.version}\" \"${nextRelease.version}\" \"${nextRelease.type}\" \"${branch.name}\" \"${nextRelease.notes}\"",
+      "successCmd": "./version-management.sh \"${nextRelease.version}\" \"${nextRelease.type}\" \"${branch.name}\""
+    }
+  ],
+  [
+    "@semantic-release/git",
+    {
+      "assets": [ "CHANGELOG.md", "Dockerfile" ]
+    }
+  ]
+]
+branches:
+  - "main"
+tagFormat: "${version}"
