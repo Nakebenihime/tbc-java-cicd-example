@@ -17,9 +17,13 @@ variables:
   MAVEN_DEPLOY_SNAPSHOT_WITH_SLUG_ENABLED: "true"
 
   DOCKER_TRIVY_DISABLED: "true"
+
   SONAR_HOST_URL: "https://sonarcloud.io"
+
   SEMREL_CHANGELOG_ENABLED: "true"
   SEMREL_INFO_ON: "protected"
+
+  BASH_SHELLCHECK_FILES: "*.sh"
 
   # secret variables
   # (define the variables below in your GitLab group/project variables)
