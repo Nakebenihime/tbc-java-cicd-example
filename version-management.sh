@@ -2,7 +2,6 @@
 
 # logging functions for different log levels
 log_info() { >&2 echo -e "[\e[1;94mINFO\e[0m] $*"; }
-log_warn() { >&2 echo -e "[\e[1;93mWARN\e[0m] $*"; }
 log_error() { >&2 echo -e "[\e[1;91mERROR\e[0m] $*"; }
 
 # function to evaluate maven settings and builds the CLI option accordingly ("-s")
@@ -24,7 +23,7 @@ replace_version_in_files() {
   if [[ -f pom.xml ]]; then
     log_info "Bump to \e[33;1m$VERSION\e[0m version in pom.xml file(s)"
     apt-get update -q 1>/dev/null && apt-get install -qy maven 1>/dev/null
-    mvn versions:set $mvn_settings_opt -DnewVersion=$VERSION -q
+    mvn versions:set "$mvn_settings_opt" -DnewVersion="$VERSION" -q
     git add ":(glob)**/pom.xml"
   fi
 
@@ -41,7 +40,7 @@ if [[ $# -eq 3 ]]; then
   RELEASE_TYPE=$2
   BRANCH=$3
 
-  TEMP_NEXT_VERSION=$(echo $NEXT_VERSION | awk -F. '{print $1 "." $2 + 1 ".0"}')
+  TEMP_NEXT_VERSION=$(echo "$NEXT_VERSION" | awk -F. '{print $1 "." $2 + 1 ".0"}')
   SNAPSHOT_VERSION=$TEMP_NEXT_VERSION-SNAPSHOT
 
   eval_mvn_settings_opt
@@ -49,7 +48,7 @@ if [[ $# -eq 3 ]]; then
   log_info "Bump version from \e[33;1m${NEXT_VERSION}\e[0m to \e[33;1m${SNAPSHOT_VERSION}\e[0m (release type: $RELEASE_TYPE)..."
   log_info "Create a release branch to retrieve changes done by bumpversion.sh"
   BRANCH_FROM_RELEASE=release/${NEXT_VERSION}
-  git checkout -b $BRANCH_FROM_RELEASE
+  git checkout -b "$BRANCH_FROM_RELEASE"
 
   replace_version_in_files "$SNAPSHOT_VERSION"
 
@@ -64,7 +63,7 @@ if [[ $# -eq 3 ]]; then
     log_info "Merge ${BRANCH_FROM_RELEASE} into develop"
     git fetch origin
     git checkout develop
-    git merge --no-ff $BRANCH_FROM_RELEASE -m "Merge '$BRANCH_FROM_RELEASE' into develop [ci skip]"
+    git merge --no-ff "$BRANCH_FROM_RELEASE" -m "Merge '$BRANCH_FROM_RELEASE' into develop [ci skip]"
     merge_result=$?
 
     if [ $merge_result -eq 0 ]; then
@@ -74,7 +73,7 @@ if [[ $# -eq 3 ]]; then
       log_info "Push new commit to develop [ci skip]"
       GIT_BASE_URL=$(echo "$CI_REPOSITORY_URL" | cut -d\@ -f2)
       GIT_AUTH_URL="https://token:${GITLAB_TOKEN}@${GIT_BASE_URL}"
-      git push $GIT_AUTH_URL develop
+      git push "$GIT_AUTH_URL" develop
       push_result=$?
 
       if [ $push_result -eq 0 ]; then
@@ -102,7 +101,7 @@ elif [[ $# -ge 4 ]]; then
     log_info "Bump version from \e[33;1m${CURRENT_VERSION}\e[0m to \e[33;1m${NEXT_VERSION}\e[0m (release type: $RELEASE_TYPE)..."
     else
       if [[ -f pom.xml ]]; then
-        SNAPSHOT_VERSION=$(mvn help:evaluate $mvn_settings_opt -Dexpression=project.version -q -DforceStdout | sed "s/[^0-9]*\\([0-9\\.]+\\(-SNAPSHOT\\)?\\).*/\\1/")
+        SNAPSHOT_VERSION=$(mvn help:evaluate "$mvn_settings_opt" -Dexpression=project.version -q -DforceStdout | sed "s/[^0-9]*\\([0-9\\.]+\\(-SNAPSHOT\\)?\\).*/\\1/")
       else
         SNAPSHOT_VERSION=0.0.1-SNAPSHOT
       fi
@@ -116,7 +115,7 @@ elif [[ $# -ge 4 ]]; then
   git commit -m "chore(release): ${NEXT_VERSION}" -m "${NOTES}"
   GIT_BASE_URL=$(echo "$CI_REPOSITORY_URL" | cut -d\@ -f2)
   GIT_AUTH_URL="https://token:${GITLAB_TOKEN}@${GIT_BASE_URL}"
-  git push -o ci.skip $GIT_AUTH_URL HEAD:$BRANCH
+  git push -o ci.skip "$GIT_AUTH_URL" HEAD:"$BRANCH"
 
 else
   log_error "Invalid number of arguments"
