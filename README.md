@@ -20,23 +20,24 @@ To get started, make sure you have the following tools installed:
 
 ## CI/CD Pipeline Stages
 
-| Stage              | Job                  | Description                                                                                                         | Branch        | Tag |
-|--------------------|----------------------|---------------------------------------------------------------------------------------------------------------------|---------------|-----|
-| **.pre**           | semantic-release-info | Runs to retrieve semantic release information.                                                                     | develop, main |     |
-| **build**          | bash-shellcheck      | Runs a static analysis of your shell using Shellcheck.                                                              | develop, main |     |
-| **build**          | docker-hadolint      | Runs Hadolint, a Dockerfile linter, to ensure Dockerfile best practices.                                            | develop, main | X   |
-| **build**          | mvn-build            | Runs Maven build commands to compile the project.                                                                   | develop, main | X   |
-| **test**           | gitleaks             | Runs Gitleaks to scan the repository for any secrets.                                                               | develop, main | X   |
-| **test**           | mvn-dependency-check | Runs Maven dependency-check to identify any known vulnerabilities in project dependencies.                          | develop, main | X   |
-| **test**           | mvn-no-snapshot-deps | Runs to ensure that no snapshot dependencies are used.                                                              | develop, main | X   |
-| **test**           | mvn-sbom             | Runs to generate a Software Bill of Materials (SBOM) of the Maven project.                                          | develop, main | X   |
-| **test**           | mvn-sonar            | Runs SonarQube analysis for code quality checks.                                                                    | develop, main | X   |
-| **package-build**  | docker-kaniko-build  | Runs Kaniko to build Docker images.                                                                                 | develop, main | X   |
-| **package-test**   | docker-sbom          | Runs to generate a Software Bill of Materials (SBOM) of the Docker image.                                           | develop, main | X   |
-| **publish**        | mvn-deploy-release   | Runs to deploy the Maven project as a release in the Package registry.                                              |               | X   |
-| **publish**        | mvn-deploy-snapshot  | Runs to deploy the Maven project as a snapshot in the Package registry.                                             | develop, main | X   |
-| **publish**        | semantic-release     | Runs semantic release to automatically determine and release a new version using semantic versioning conventions.   | main          |     |
-| **publish**        | docker-publish       | Runs to publish Docker images in the Container registry.                                                            | main          |     |
+| Stage              | Job                  | Description                                                                                                       | Branch        | Tag |
+|--------------------|----------------------|-------------------------------------------------------------------------------------------------------------------|---------------|-----|
+| **.pre**           | semantic-release-info | Runs to retrieve semantic release information.                                                                    | develop, main |     |
+| **build**          | bash-shellcheck       | Runs a static analysis of your shell using Shellcheck.                                                            | develop, main |     |
+| **build**          | docker-hadolint       | Runs Hadolint, a Dockerfile linter, to ensure Dockerfile best practices.                                          | develop, main | X   |
+| **build**          | mvn-build             | Runs Maven build commands to compile the project.                                                                 | develop, main | X   |
+| **test**           | gitleaks              | Runs Gitleaks to scan the repository for any secrets.                                                             | develop, main | X   |
+| **test**           | mvn-dependency-check  | Runs Maven dependency-check to identify any known vulnerabilities in project dependencies.                        | develop, main | X   |
+| **test**           | mvn-no-snapshot-deps  | Runs to ensure that no snapshot dependencies are used.                                                            | develop, main | X   |
+| **test**           | mvn-sbom              | Runs to generate a Software Bill of Materials (SBOM) of the Maven project.                                        | develop, main | X   |
+| **test**           | mvn-sonar             | Runs SonarQube analysis for code quality checks.                                                                  | develop, main | X   |
+| **package-build**  | docker-kaniko-build   | Runs Kaniko to build Docker images.                                                                               | develop, main | X   |
+| **package-test**   | docker-trivy          | Run Trivy in standalone mode to perform a static vulnerability scan on your built image.                          | develop, main | X   |
+| **package-test**   | docker-sbom           | Runs to generate a Software Bill of Materials (SBOM) of the Docker image.                                         | develop, main | X   |
+| **publish**        | mvn-deploy-release    | Runs to deploy the Maven project as a release in the Package registry.                                            |               | X   |
+| **publish**        | mvn-deploy-snapshot   | Runs to deploy the Maven project as a snapshot in the Package registry.                                           | develop, main | X   |
+| **publish**        | semantic-release      | Runs semantic release to automatically determine and release a new version using semantic versioning conventions. | main          |     |
+| **publish**        | docker-publish        | Runs to publish Docker images in the Container registry.                                                          | main          |     |
 
 ## Getting Started
 
